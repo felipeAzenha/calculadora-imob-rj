@@ -103,16 +103,20 @@ with st.sidebar:
         with col_del: st.button("🗑️", key=f"del_{i}", on_click=remover_item, args=(i,))
         valor_total_obra += st.session_state.itens_reforma[i]["Valor (R$)"]
 
-    # ESPAÇO PARA RENTABILIZAÇÃO (PARCEIRO)
+    # ESPAÇO DE RENTABILIZAÇÃO (BANNER DE PARCEIRO)
     st.write("---")
-    st.write("### 🏠 Parceiro Recomendado")
-    st.markdown('''
-        <div style="background-color: white; padding: 15px; border-radius: 10px; border: 1px solid #ddd; text-align: center;">
-            <p style="font-size: 0.85em; color: #4A4A4A; margin-bottom: 8px;"><b>Seguro Residencial & Vistoria</b></p>
-            <p style="font-size: 0.75em; color: #888; margin-bottom: 12px;">Garanta a segurança do seu novo lar no Rio.</p>
-            <a href="https://www.google.com" target="_blank" style="background-color: #28a745; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-size: 0.8em; font-weight: bold;">Ver Ofertas</a>
+    st.markdown("""
+        <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h4 style="color: #2e7d32; margin-top: 0;">🛡️ Seguro e Vistoria</h4>
+            <p style="font-size: 0.85em; color: #666; line-height: 1.4;">Não compre no escuro! Garanta a vistoria técnica e o seguro do seu novo lar no Rio.</p>
+            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+            <a href="https://www.google.com.br" target="_blank" 
+               style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
+               CONFERIR OFERTAS
+            </a>
+            <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Parceria verificada Calculadora Imob</p>
         </div>
-    ''', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # 4. DASHBOARD PRINCIPAL
 st.title("🏠 Dashboard de Planejamento Imobiliário")
@@ -126,7 +130,8 @@ taxa_rgi = 0.007 * (0.5 if primeiro_imovel and e_financiado else 1.0)
 custo_rgi = base_calc * taxa_rgi
 v_escritura = 0.0 if e_financiado else (base_calc * 0.006)
 v_banco = 3500.0 if e_financiado else 0.0
-total_desembolso = entrada_liquida + itbi + custo_rgi + v_escritura + v_banco
+total_taxas = itbi + custo_rgi + v_escritura + v_banco
+total_desembolso = entrada_liquida + total_taxas
 
 st.markdown(f'<div class="resumo-header">VALOR DO IMÓVEL: {formar_moeda(st.session_state.valor_imovel)}</div>',
             unsafe_allow_html=True)
