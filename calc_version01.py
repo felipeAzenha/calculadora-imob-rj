@@ -1,21 +1,21 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+#from streamlit_gsheets import GSheetsConnection # Se usar planilhas, senão ignore
+import streamlit.components.v1 as components
 
-
-# 1. FUNÇÃO PARA INJETAR O GOOGLE ANALYTICS
 def inject_ga(ga_id):
     ga_code = f"""
-    <script async src="https://www.googletagmanager.com/gtag/js?id={ga_id}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){{dataLayer.push(arguments);}}
-        gtag('js', new Date());
-        gtag('config', '{ga_id}');
-    </script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={ga_id}"></script>
+        <script>
+            window.parent.dataLayer = window.parent.dataLayer || [];
+            function gtag(){{window.parent.dataLayer.push(arguments);}}
+            gtag('js', new Date());
+            gtag('config', '{ga_id}');
+        </script>
     """
-    st.markdown(ga_code, unsafe_allow_html=True)
-
+    # Injeta o código de forma que ele consiga "conversar" com a página pai (parent)
+    components.html(ga_code, height=0)
 
 # SEU ID DE MENSURAÇÃO CONFIGURADO
 inject_ga("G-SCKRXZTH4G")
