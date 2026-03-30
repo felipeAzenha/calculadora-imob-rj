@@ -97,14 +97,14 @@ with st.sidebar:
             <img src="https://upload.wikimedia.org/wikipedia/pt/d/d3/QuintoAndar_Logo.png" style="width: 120px; margin-bottom: 10px;">
             <h4 style="color: #4b00e0; margin-top: 0;">Anuncie ou Encontre</h4>
             <p style="font-size: 0.85em; color: #666; line-height: 1.4;">
-                Vai vender ou comprar um Imóvel? Comprar e Reformar? Use o <b>QuintoAndar</b>.
+                Com a nossa calculadora você tem controles dos seus custos, agora só falta escolher seu novo imóvel. Use o <b>QuintoAndar</b>.
             </p>
             <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
             <a href="https://quin.to/drhpiada?codigo=b9rRpG" target="_blank" 
                style="display: inline-block; background-color: #4b00e0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
-               INDICAR IMÓVEL
+               ANUNCIE SEU IMÓVEL
             </a>
-            <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Indicação premiada Felipe Azenha</p>
+            <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Indicação premiada</p>
         </div>
     """, unsafe_allow_html=True)
 
