@@ -1,9 +1,9 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-#from streamlit_gsheets import GSheetsConnection # Se usar planilhas, senão ignore
 import streamlit.components.v1 as components
 
+# 1. FUNÇÃO PARA INJETAR O GOOGLE ANALYTICS (VERSÃO REVISADA)
 def inject_ga(ga_id):
     ga_code = f"""
         <script async src="https://www.googletagmanager.com/gtag/js?id={ga_id}"></script>
@@ -11,13 +11,13 @@ def inject_ga(ga_id):
             window.parent.dataLayer = window.parent.dataLayer || [];
             function gtag(){{window.parent.dataLayer.push(arguments);}}
             gtag('js', new Date());
-            gtag('config', '{ga_id}');
+            gtag('config', '{ga_id}', {{ 'anonymize_ip': false }});
         </script>
     """
-    # Injeta o código de forma que ele consiga "conversar" com a página pai (parent)
-    components.html(ga_code, height=0)
+    # Usamos um iframe invisível para injetar o script na página pai
+    components.html(ga_code, height=0, width=0)
 
-# SEU ID DE MENSURAÇÃO CONFIGURADO
+# SEU ID DE MENSURAÇÃO
 inject_ga("G-SCKRXZTH4G")
 
 # 2. CONFIGURAÇÃO DA PÁGINA E ESTILOS
@@ -33,42 +33,32 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-
 # --- FUNÇÃO DE FORMATAÇÃO PT-BR ---
 def formar_moeda(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-
-# --- LÓGICA DE SINCRONIZAÇÃO (SESSION STATE) ---
+# --- LÓGICA DE SESSION STATE ---
 if 'valor_imovel' not in st.session_state: st.session_state.valor_imovel = 550000.0
 if 'perc_entrada' not in st.session_state: st.session_state.perc_entrada = 20.0
-if 'valor_entrada' not in st.session_state: st.session_state.valor_entrada = st.session_state.valor_imovel * (
-            st.session_state.perc_entrada / 100)
+if 'valor_entrada' not in st.session_state: st.session_state.valor_entrada = st.session_state.valor_imovel * (st.session_state.perc_entrada / 100)
 if 'itens_reforma' not in st.session_state: st.session_state.itens_reforma = []
-
 
 def update_por_percentual():
     st.session_state.valor_entrada = st.session_state.valor_imovel * (st.session_state.perc_entrada / 100)
 
-
 def update_por_valor():
     st.session_state.perc_entrada = (st.session_state.valor_entrada / st.session_state.valor_imovel) * 100
-
 
 def adicionar_item():
     st.session_state.itens_reforma.append({"Descrição": "Novo Item", "Valor (R$)": 0.0})
 
-
 def remover_item(index):
     st.session_state.itens_reforma.pop(index)
-
 
 # 3. MENU LATERAL
 with st.sidebar:
     st.header("⚙️ Configurações da Compra")
-    st.session_state.valor_imovel = st.number_input("Valor do Imóvel (R$)", min_value=100000.0,
-                                                    value=st.session_state.valor_imovel, step=10000.0,
-                                                    on_change=update_por_percentual)
+    st.session_state.valor_imovel = st.number_input("Valor do Imóvel (R$)", min_value=100000.0, value=st.session_state.valor_imovel, step=10000.0, on_change=update_por_percentual)
     valor_venal = st.number_input("Valor Venal / IPTU (R$)", min_value=0.0, value=0.0)
     e_financiado = st.checkbox("Haverá Financiamento?", value=True)
 
@@ -92,41 +82,35 @@ with st.sidebar:
     st.button("➕ Adicionar Item de Reforma", on_click=adicionar_item)
 
     valor_total_obra = 0.0
+    # O LOOP FOR TERMINA AQUI PARA O BANNER NÃO REPETIR
     for i, item in enumerate(st.session_state.itens_reforma):
         col_desc, col_val, col_del = st.columns([3, 2, 0.5])
-        with col_desc: st.session_state.itens_reforma[i]["Descrição"] = st.text_input(f"Item {i + 1}",
-                                                                                      value=item["Descrição"],
-                                                                                      key=f"d_{i}")
-        with col_val: st.session_state.itens_reforma[i]["Valor (R$)"] = st.number_input(f"R$ {i + 1}", min_value=0.0,
-                                                                                        value=item["Valor (R$)"],
-                                                                                        key=f"v_{i}")
+        with col_desc: st.session_state.itens_reforma[i]["Descrição"] = st.text_input(f"Item {i + 1}", value=item["Descrição"], key=f"d_{i}")
+        with col_val: st.session_state.itens_reforma[i]["Valor (R$)"] = st.number_input(f"R$ {i + 1}", min_value=0.0, value=item["Valor (R$)"], key=f"v_{i}")
         with col_del: st.button("🗑️", key=f"del_{i}", on_click=remover_item, args=(i,))
         valor_total_obra += st.session_state.itens_reforma[i]["Valor (R$)"]
 
-    # ESPAÇO DE RENTABILIZAÇÃO (BANNER DE PARCEIRO)
-        # ESPAÇO DE RENTABILIZAÇÃO (BANNER QUINTO ANDAR)
-        st.write("---")
-        st.markdown("""
-            <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <img src="https://upload.wikimedia.org/wikipedia/pt/d/d3/QuintoAndar_Logo.png" style="width: 120px; margin-bottom: 10px;">
-                <h4 style="color: #4b00e0; margin-top: 0;">Anuncie ou Encontre</h4>
-                <p style="font-size: 0.85em; color: #666; line-height: 1.4;">
-                    Vai vender ou comprar um Imóvel? Comprar e Reformar ? Use o <b>QuintoAndar</b>.
-                </p>
-                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
-                <a href="https://quin.to/drhpiada?codigo=b9rRpG" target="_blank" 
-                   style="display: inline-block; background-color: #4b00e0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
-                   INDICAR IMÓVEL
-                </a>
-                <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Indicação premiada Felipe Azenha</p>
-            </div>
-        """, unsafe_allow_html=True)
+    # BANNER FORA DO LOOP (CORRIGIDO)
+    st.write("---")
+    st.markdown("""
+        <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <img src="https://upload.wikimedia.org/wikipedia/pt/d/d3/QuintoAndar_Logo.png" style="width: 120px; margin-bottom: 10px;">
+            <h4 style="color: #4b00e0; margin-top: 0;">Anuncie ou Encontre</h4>
+            <p style="font-size: 0.85em; color: #666; line-height: 1.4;">
+                Vai vender ou comprar um Imóvel? Comprar e Reformar? Use o <b>QuintoAndar</b>.
+            </p>
+            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+            <a href="https://quin.to/drhpiada?codigo=b9rRpG" target="_blank" 
+               style="display: inline-block; background-color: #4b00e0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
+               INDICAR IMÓVEL
+            </a>
+            <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Indicação premiada Felipe Azenha</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # 4. DASHBOARD PRINCIPAL
 st.title("🏠 Dashboard de Planejamento Imobiliário")
-st.markdown(
-    '<p class="subtitulo-aviso">Estimativa baseada em dados públicos. Recomenda-se consultar seu banco e cartório local.</p>',
-    unsafe_allow_html=True)
+st.markdown('<p class="subtitulo-aviso">Estimativa baseada em dados públicos. Recomenda-se consultar seu banco e cartório local.</p>', unsafe_allow_html=True)
 
 base_calc = max(st.session_state.valor_imovel, valor_venal)
 itbi = base_calc * 0.03
@@ -137,8 +121,7 @@ v_banco = 3500.0 if e_financiado else 0.0
 total_taxas = itbi + custo_rgi + v_escritura + v_banco
 total_desembolso = entrada_liquida + total_taxas
 
-st.markdown(f'<div class="resumo-header">VALOR DO IMÓVEL: {formar_moeda(st.session_state.valor_imovel)}</div>',
-            unsafe_allow_html=True)
+st.markdown(f'<div class="resumo-header">VALOR DO IMÓVEL: {formar_moeda(st.session_state.valor_imovel)}</div>', unsafe_allow_html=True)
 
 # ESTRUTURA DE CAPITAL
 st.write("#### 💰 Estrutura de Capital")
@@ -153,8 +136,7 @@ c_graf, c_met = st.columns([1.5, 1])
 
 with c_graf:
     df_c = pd.DataFrame({'Custo': ['ITBI', 'RGI', 'Outros'], 'Valor': [itbi, custo_rgi, v_escritura + v_banco]})
-    fig = px.pie(df_c, values='Valor', names='Custo', hole=.3, color='Custo',
-                 color_discrete_map={'ITBI': '#4A4A4A', 'RGI': '#0c5460', 'Outros': '#6c757d'})
+    fig = px.pie(df_c, values='Valor', names='Custo', hole=.3, color='Custo', color_discrete_map={'ITBI': '#4A4A4A', 'RGI': '#0c5460', 'Outros': '#6c757d'})
     st.plotly_chart(fig, use_container_width=True)
 
 with c_met:
@@ -167,9 +149,7 @@ st.success(f"### 💸 Total necessário em mãos: {formar_moeda(total_desembolso
 # REFORMA
 st.write("---")
 st.write("#### 🏗️ Planejamento de Reforma")
-st.markdown(
-    f'<div class="resumo-header" style="background-color: #6c757d;">VALOR TOTAL DA REFORMA: {formar_moeda(valor_total_obra)}</div>',
-    unsafe_allow_html=True)
+st.markdown(f'<div class="resumo-header" style="background-color: #6c757d;">VALOR TOTAL DA REFORMA: {formar_moeda(valor_total_obra)}</div>', unsafe_allow_html=True)
 
 if st.session_state.itens_reforma:
     df_it = pd.DataFrame(st.session_state.itens_reforma)
