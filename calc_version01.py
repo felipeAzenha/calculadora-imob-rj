@@ -104,19 +104,23 @@ with st.sidebar:
         valor_total_obra += st.session_state.itens_reforma[i]["Valor (R$)"]
 
     # ESPAÇO DE RENTABILIZAÇÃO (BANNER DE PARCEIRO)
-    st.write("---")
-    st.markdown("""
-        <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h4 style="color: #2e7d32; margin-top: 0;">🛡️ Seguro e Vistoria</h4>
-            <p style="font-size: 0.85em; color: #666; line-height: 1.4;">Não compre no escuro! Garanta a vistoria técnica e o seguro do seu novo lar no Rio.</p>
-            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
-            <a href="https://www.google.com.br" target="_blank" 
-               style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
-               CONFERIR OFERTAS
-            </a>
-            <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Parceria verificada Calculadora Imob</p>
-        </div>
-    """, unsafe_allow_html=True)
+        # ESPAÇO DE RENTABILIZAÇÃO (BANNER QUINTO ANDAR)
+        st.write("---")
+        st.markdown("""
+            <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <img src="https://upload.wikimedia.org/wikipedia/pt/d/d3/QuintoAndar_Logo.png" style="width: 120px; margin-bottom: 10px;">
+                <h4 style="color: #4b00e0; margin-top: 0;">Anuncie ou Encontre</h4>
+                <p style="font-size: 0.85em; color: #666; line-height: 1.4;">
+                    Vai vender ou comprar um Imóvel? Comprar e Reformar ? Use o <b>QuintoAndar</b>.
+                </p>
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+                <a href="https://quin.to/drhpiada?codigo=b9rRpG" target="_blank" 
+                   style="display: inline-block; background-color: #4b00e0; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
+                   INDICAR IMÓVEL
+                </a>
+                <p style="font-size: 0.65em; color: #aaa; margin-top: 10px;">Indicação premiada Felipe Azenha</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # 4. DASHBOARD PRINCIPAL
 st.title("🏠 Dashboard de Planejamento Imobiliário")
